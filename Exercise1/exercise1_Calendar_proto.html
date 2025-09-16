@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercise 1 Prototype 2 NMolnar</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script> 
+    <style> 
+    /*
+        Differently styled elements:
+        tree-ring container (needs styling around placement of items inside svg)
+        circles (need color, but this should alternate. Size is determined by data)
+            color should be determined by index of data, if odd one color if even another
+    */
+
+        
+    </style>
+
+</head>
+    <body>
+        <div>  
+            <svg id ="canvas"></svg>
+        </div>
+
+        <script>
+    
+
+            const svg = d3.select("#canvas");
+            const width = window.innerWidth;
+            const height = window.innerHeight/1.5;        
+            svg.attr("width", width).attr("height", height);
+
+            // create dummy year data (copilot, GPT-4.1 ask mode). 
+            // troubleshooting date time was done with google search. I made sure I understood what everything was doing before going ahead with it
+            const weather_types = ["sunny", "rainy", "cloudy", "partly cloudy"];
+            const days_365 = {};
+            const year = 2023;
+            for (let day = 0; day <= 364; day++) {
+                const date = new Date(year, 0, day + 1); // Jan 1 is day 1
+                const dateString = date.toISOString().slice(0, 10); // to ISOstring formats it to YYYY-MM-DD
+                const randomWeather = weather_types[Math.floor(Math.random() * weather_types.length)];
+                days_365[dateString] = randomWeather;
+            }
+
+            // trying out a nest as suggested by tutorial: https://blog.risingstack.com/tutorial-d3-js-calendar-heatmap/
+            // nest is deprecated, so using group which we did learn about but I don't remember too much about
+            // will try to make a 
+
+
+            var months = d3.group(Object.entries(days_365), d => d[0].slice(5,7)); // this iterates over all iterable items in days_365, groups by month (slicing string to get chars 5 and 6 which are month)
+
+            //function to get color from weather type
+            function getColor(weather) {
+                if (weather === "sunny") {
+                    return "#f4d35e"; // yellow
+                } else if (weather === "rainy") {
+                    return "#457b9d"; // blue
+                } else if (weather === "cloudy") {
+                    return "#a8dadc"; // light blue
+                } else if (weather === "partly cloudy") {
+                    return "#f1faee"; // off-white
+                } else {
+                    return "#ccc"; // default gray for any other undefined weather
+                }
+            }
+
+            //need to have 12 rows with 31 cols each
+            //create 365 days
+            // this is adapted from the clock example we did in class
+            const squares = [];
+            const rows = 12;
+            const cols = 31;
+            const cellWidth = width / cols;
+            const cellHeight = height / rows;
+
+            for (let i = 0; i < 365; i++) {
+                const col = i % cols; // breaks 0-365 into 31 columns
+                const row = Math.floor(i / cols);
+                const x = col * cellWidth + cellWidth / 2;
+                const y = row * cellHeight + cellHeight / 2;
+                
+                // still need to think through the x and y placement logic
+                const square = svg.append("rect")
+                    .attr("x", x)
+                    .attr("y", y)
+                    // some of these get cut off on the bottom
+                    .attr("width", cellWidth - 2) // -2 for padding
+                    .attr("height", cellHeight - 2) // ditto
+                    .attr("fill", getColor(days_365[Object.keys(days_365)[i]])) // get weather for the day and determine color
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1);
+                
+                squares.push(square);
+            }
+            // this is just a heatmap though ...... 
+
+
+
+
+        </script>
+
+
+    </body>
+</html>
