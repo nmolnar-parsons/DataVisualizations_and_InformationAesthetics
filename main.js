@@ -1,7 +1,7 @@
 d3.json("Obsidian_Raw.json").then(data => {
     const svg = d3.select("#canvas");
-    const width = window.innerWidth;
-    const height = window.innerHeight/1.5 ;        
+    const width = 1000;
+    const height = 500 ;        
     svg.attr("width", width).attr("height", height);
 
     // standardize them margins
