@@ -1,0 +1,92 @@
+[
+  {
+    "Year": 2015,
+    "Obsidian_Harvested": 312,
+    "Obsidian_Processed": 312,
+    "Poseidon_Harvested": 343,
+    "Poseidon_Processed": 343,
+    "Total_H": 655,
+    "Total_P": 655
+  },
+  {
+    "Year": 2016,
+    "Obsidian_Harvested": 495,
+    "Obsidian_Processed": 495,
+    "Poseidon_Harvested": 425,
+    "Poseidon_Processed": 425,
+    "Total_H": 920,
+    "Total_P": 920
+  },
+  {
+    "Year": 2017,
+    "Obsidian_Harvested": 428,
+    "Obsidian_Processed": 428,
+    "Poseidon_Harvested": 410,
+    "Poseidon_Processed": 410,
+    "Total_H": 838,
+    "Total_P": 838
+  },
+  {
+    "Year": 2018,
+    "Obsidian_Harvested": 400,
+    "Obsidian_Processed": 0,
+    "Poseidon_Harvested": 510,
+    "Poseidon_Processed": 510,
+    "Total_H": 910,
+    "Total_P": 510
+  },
+  {
+    "Year": 2019,
+    "Obsidian_Harvested": 484,
+    "Obsidian_Processed": 484,
+    "Poseidon_Harvested": 378,
+    "Poseidon_Processed": 378,
+    "Total_H": 862,
+    "Total_P": 862
+  },
+  {
+    "Year": 2020,
+    "Obsidian_Harvested": 520,
+    "Obsidian_Processed": 0,
+    "Poseidon_Harvested": 278,
+    "Poseidon_Processed": 278,
+    "Total_H": 798,
+    "Total_P": 278
+  },
+  {
+    "Year": 2021,
+    "Obsidian_Harvested": 414,
+    "Obsidian_Processed": 414,
+    "Poseidon_Harvested": 330,
+    "Poseidon_Processed": 330,
+    "Total_H": 744,
+    "Total_P": 744
+  },
+  {
+    "Year": 2022,
+    "Obsidian_Harvested": 676,
+    "Obsidian_Processed": 676,
+    "Poseidon_Harvested": 323,
+    "Poseidon_Processed": 323,
+    "Total_H": 999,
+    "Total_P": 999
+  },
+  {
+    "Year": 2023,
+    "Obsidian_Harvested": 643.2,
+    "Obsidian_Processed": 448.2,
+    "Poseidon_Harvested": 403.8,
+    "Poseidon_Processed": 376,
+    "Total_H": 1047,
+    "Total_P": 824.21
+  },
+  {
+    "Year": 2024,
+    "Obsidian_Harvested": 463.7,
+    "Obsidian_Processed": 294.1,
+    "Poseidon_Harvested": 239.3,
+    "Poseidon_Processed": 238,
+    "Total_H": 703,
+    "Total_P": 532.50
+  }
+]

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Obsidian</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+            body{
+                background-color: #dfd7d7c3;
+            }
+            header { /* header customization*/
+                text-align: center;
+                margin-bottom: 20px;
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                background-color: rgb(234, 143, 45, 0.4);
+                padding: 10px;
+                box-shadow: 0 4px 8px rgba(128, 119, 205, 0.5);
+                border-radius: 25px;
+                
+            }
+            .main_body { /* main body text customization */
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                font-size: 16px;
+                margin: 20px;
+            }
+            .legend rect {
+                stroke-width: 1;
+                stroke: #000;
+            }
+            h3 {
+                font-style: italic;
+                font-size: 11px;
+                font-weight: normal;
+                color: rgb(143, 27, 27);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Obsdian Wine Company Harvests, 2015 to 2024</h1>
+            <h2>visualizing harvests and fire disruption</h2>
+            <h3>Data from Obsidian Wine Company internal financial report, not publically available</h3>
+        </header>
+        <script src="main.js"></script>
+        <div>
+            <svg id="canvas"></svg>
+        </div>
+        <p class="main_body">
+            Obsidian Wine Company is a Northern California Winery which owns and operates two vineyards: Obsidian Ridge Vineyard, in Lake County, and Poseidon Vineyard, in Napa County. 
+            Grapes harvested from each vineyard are weighed and processed into wine at Obsidian's Winery. 
+            
+        </p>
+        <p class="main_body">
+            This radial stacked area chart visualizes the tons of grapes harvested from Obsidian and Poseidon vineyards from 2015 to 2024. Vineyards 
+            are harvested once a year, usually between the months of August and Novemeber.
+            Fires in 2018 (Mendocino Complex) and 2020 (LNU Lighting Complex) severely disrupted wine  harvesting 
+            in Lake County: grapes were "smoke tainted" and were not fit to be harvested and processed into wine. 
+            This graph highlights the disruption of the fires on harvests in this decade.
+        </p>
+    </body>
+</html>
