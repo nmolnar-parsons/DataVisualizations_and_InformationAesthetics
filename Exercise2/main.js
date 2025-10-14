@@ -37,15 +37,20 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .domain(d3.extent(data_movies, d => d.runtimeMinutes)).nice()
         .range([marginLeft, width - marginRight]);
 
-    // y_axis = d3.scaleLinear()
-    //     .domain(d3.extent(data_movies, d => d.Views)).nice()
-    //     .range([height - marginBottom, marginTop]);
+    //Limited x axis
+    // x_axis = d3.scaleLinear()
+    //     .domain([80,120]).nice()
+    //     .range([marginLeft, width - marginRight]);
+
+    y_axis = d3.scaleLinear()
+        .domain(d3.extent(data_movies, d => d.Views)).nice()
+        .range([height - marginBottom, marginTop]);
 
 
     // alternate fixed viewcount so we can observe more of the data
-    y_axis = d3.scaleLinear()
-        .domain([1000000,60000000]).nice()
-        .range([height - marginBottom, marginTop]);
+    // y_axis = d3.scaleLinear()
+    //     .domain([1000000,15000000]).nice()
+    //     .range([height - marginBottom, marginTop]);
 
 
     //genres check
@@ -71,6 +76,9 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
     allGenres.delete("Short")
     allGenres.delete("Biography")
     allGenres.delete("War")
+    allGenres.delete("History")
+    allGenres.delete("Thriller")
+    allGenres.delete("Crime")
 
 
 
@@ -86,9 +94,47 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .x(d => x_axis(d.runtimeMinutes))
         .y(d => y_axis(d.Views))
         .size([width, height])
-        .bandwidth(30)
-        .thresholds(30)
+        .bandwidth(20)
+        .thresholds(20)
         (data_movies);
+
+
+
+    //tooltip
+
+    //append div to svg
+    var tooltip = d3.select("#canvas")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+
+    //mouseover function
+
+    var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+    }
+
+    var mousemove = function(event, d) {
+        tooltip
+        .html("Title:" + d.primaryTitle)
+        .style("left", (d3.pointer(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", (d3.pointer(this)[1]) + "px")
+    }
+
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var mouseleave = function(d) {
+        tooltip
+        .style("opacity", 0)
+    }
+
+
+
 
     //setup canvas
     const svg = d3.select("#canvas")
@@ -129,8 +175,12 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .join("circle")
             .attr("cx", d => x_axis(d.runtimeMinutes))
             .attr("cy", d => y_axis(d.Views))
-            .attr("r", 3)
+            //.attr("r", d => (height -y_axis(d.Views))/20)
+            .attr("r", 6)
             .attr("fill", d => color(d.genres[0])) // color by first genre
+        .on("mouseover", mouseover )
+        .on("mousemove", mousemove )
+        .on("mouseleave", mouseleave )
 
     //append contours
     svg.append("g")
@@ -143,6 +193,8 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
             .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
             .attr("d", d3.geoPath());
 
+
+        
 
     //legend for colors
     const legend = d3.select("#legend")
