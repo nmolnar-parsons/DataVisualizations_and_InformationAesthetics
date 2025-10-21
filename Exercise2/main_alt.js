@@ -24,19 +24,19 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         d.Views = +d.Views;
         d.genres = d.genres.split(","); // split genres into array
         d.fixed_minutes = runtime_to_minutes(d.Runtime);
-
-
+        d.startYear = +d.startYear;
     })
+    loadChart(data_movies);
+
+    });
     
 
+function loadChart(data_movies) {
     const contour_width = 10;
     const contour_color = "black";
-    
 
-   
-
-    const width = 1300;
-    const height = 800;
+    const width = window.innerWidth * 0.9 + 100;
+    const height = window.innerHeight * 0.9;
     const marginTop = 20;
     const marginRight = 50;
     const marginBottom = 30;
@@ -48,35 +48,26 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .domain(d3.extent(data_movies, d => d.fixed_minutes)).nice()
         .range([marginLeft, width - marginRight]);
 
-    //Limited x axis
-    // x_axis = d3.scaleLinear()
-    //     .domain([80,120]).nice()
-    //     .range([marginLeft, width - marginRight]);
+
 
     y_axis = d3.scaleLinear()
         .domain(d3.extent(data_movies, d => d.Views)).nice()
         .range([height - marginBottom, marginTop]);
 
 
-    // alternate fixed viewcount so we can observe more of the data
-    // y_axis = d3.scaleLinear()
-    //     .domain([1000000,15000000]).nice()
-    //     .range([height - marginBottom, marginTop]);
-
-
     //genres check
     MoviePerGenre = d3.rollup(data_movies, v => v.length, d => d.genres[0]); //naive as it only takes the first genre
     console.log(MoviePerGenre);
-    //remove Romance, Music, Family, Fantasy, SciFi, Mystery, Thriller
-    // also western sport musical short
-    // also war and biography
+    console.log(typeof(MoviePerGenre));
+  
 
     // Colorscale for genres
     const allGenres = new Set(); // ai helped with this
     data_movies.forEach(d => d.genres.forEach(g => allGenres.add(g)));
+    //list of removed
     allGenres.delete(""); // remove empty genre
     allGenres.delete("\\N") //remove second empty genre
-    allGenres.delete("Romance")
+    allGenres.delete("Mystery")
     allGenres.delete("Music")
     allGenres.delete("Family")
     allGenres.delete("Fantasy")
@@ -85,23 +76,25 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
     allGenres.delete("Sport")
     allGenres.delete("Musical")
     allGenres.delete("Short")
-    allGenres.delete("Biography")
+    // allGenres.delete("Biography")
     allGenres.delete("War")
     allGenres.delete("History")
     allGenres.delete("Thriller")
     allGenres.delete("Crime")
+    allGenres.delete("Sci-Fi")
+
+    const genreCounts = Array.from(allGenres).map(genre => ({
+        genre: genre,
+        count: data_movies.filter(d => d.genres.includes(genre)).length
+    }));
+    console.log(genreCounts);
 
 
-
-
-    console.log(allGenres); // check all genres
-
+    //color
     const color = d3.scaleOrdinal()
         .domain(allGenres)
         .range(d3.schemeSet1);
-
-
-
+    
     //tooltip
 
     //append div to svg
@@ -110,7 +103,7 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .style("opacity", 0)
         .attr("class", "tooltip")
         .style("position", "absolute")
-        .style("background-color", "white")
+        .style("background-color", "#b20710")
         .style("border", "solid")
         .style("border-width", "1px")
         .style("border-radius", "5px")
@@ -124,32 +117,45 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
     }
 
     var mousemove = function(event, d) {
+        const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+        const tooltipHeight = tooltip.node().offsetHeight;
         tooltip
-            .html(d.primaryTitle + "<br>" + d.genres)
-            .style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY + 10) + "px");
+            .html(`<span style="font-weight:bold;">${d.primaryTitle}</span><br>`
+                + d.genres.join(", ") + "<br>" 
+                + d.startYear + "<br>" 
+                + "Views: " + d.Views.toLocaleString())
+            .style("left", ((event.clientX - canvasRect.left) + 15) + "px") // right of cursor
+            .style("top", ((event.clientY - canvasRect.top) - tooltipHeight / 2) + "px") // center vertically on mouse
+            .style("color", "black")
     }
 
     // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
     var mouseleave = function(d) {
         tooltip
         .style("opacity", 0)
+        .style("left", "0px")
+        .style("top", "0px");
     }
-
-
 
     //setup canvas
     const svg = d3.select("#canvas")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
+        .style("display", "block")
         .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto;")
-        .style("background-color", "lightgrey");
+        // .attr("style", "max-width: 100%; height: auto;")
+        .on("click", function() {
+            //reset opacity
+            svg.selectAll("circle").attr("opacity", 1)
+            //reset pointer events
+            svg.selectAll("circle").attr("pointer-events", "auto")
+        })
+        .style("background", "black");
 
     //append axes 
     svg.append("g") // x
-        .attr("class", "x-axis")
+        .attr("class", "axis")
         .attr("transform", `translate(0,${height - marginBottom})`)
         .call(d3.axisBottom(x_axis).tickSizeOuter(0))
         .call(g => g.select(".domain").remove())
@@ -157,11 +163,11 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
             .attr("y", -3)
             .attr("dy", null)
             .attr("font-weight", "bold")
-            .attr("fill", "black")
+            .attr("fill", "white")
             .text("Runtime (minutes)"))
 
     svg.append("g") // y
-        .attr("class", "y-axis")
+        .attr("class", "axis")
         .attr("transform", `translate(${marginLeft},0)`)
         .call(d3.axisLeft(y_axis).tickSizeOuter(0))
         .call(g => g.select(".domain").remove())
@@ -172,26 +178,20 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
             .text("Views"));
 
 
-    var contours = d3.contourDensity()
-            .x(d => x_axis(d.fixed_minutes))
-            .y(d => y_axis(d.Views))
-            .size([width, height])
-            .bandwidth(10)
-            .thresholds(10)
-            (data_movies);
 
-    //contours
-    svg.append("g")
-            .attr("class", "contour-group")
-            .attr("fill", "none")
-            .attr("stroke", contour_color)
-            .attr("stroke-linejoin", "round")
-        .selectAll()
-        .data(contours)
-        .join("path")
-            .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
-            .attr("d", d3.geoPath());
     
+
+    //genre picker
+    // if genre is animation pick animation. if genre is romance pick romance. if neither of these two, pick the first genre
+    genre_picker = function(d) {
+        if (d.genres.includes("Animation")) {
+            return "Animation";
+        } else if (d.genres.includes("Romance")) {
+            return "Romance";
+        } else {
+            return d.genres[0];
+        }
+    }
 
     // append dots
     svg.append("g")
@@ -201,13 +201,14 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
             .attr("cx", d => x_axis(d.fixed_minutes))
             .attr("cy", d => y_axis(d.Views))
             //.attr("r", d => (height -y_axis(d.Views))/20)
-            .attr("r", 6)
-            .attr("fill", d => color(d.genres[0])) // color by first genre
+            .attr("r", 8)//d => size(d.startYear))
+            .attr("fill", d => color(genre_picker(d))) // color by first genre
         .on("mouseover", mouseover )
         .on("mousemove", mousemove )
         .on("mouseleave", mouseleave )
 
     //append contours
+    // not for final
     // svg.append("g")
     //         .attr("fill", "none")
     //         .attr("stroke", "steelblue")
@@ -219,34 +220,125 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
     //         .attr("d", d3.geoPath());
 
 
-        
 
-    //legend for colors
-    const legend = d3.select("#legend")
-        .append("svg")
-        .attr("width", 200)
-        .attr("height", 20 * allGenres.size)
-        .attr("viewBox", [0, 0, 200, 20 * allGenres.size])
-        .attr("style", "max-width: 100%; height: auto;")
-        .style("background-color", "lightgrey");
-        
-    legend.selectAll("rect")
+    // it's a bit redundant to have clicker function on both rect and text
+    highlight_circle = function(event, genre) {
+        svg.selectAll("circle")
+            .attr("opacity", d => genre_picker(d) === genre ? 1 : 0.1)
+            .attr("pointer-events", d => genre_picker(d) === genre ? "auto" : "none");
+    }
+
+    const legendDiv = d3.select("#legend")
+        .style("display", "flex")
+        .style("flex-direction", "column")
+        .style("align-items", "stretch"); // optional, makes buttons fill width
+
+
+
+
+    // Add a button for each genre
+    legendDiv.selectAll("button")
         .data(Array.from(allGenres))
-        .join("rect")
-            .attr("x", 10)
-            .attr("y", (d, i) => i * 20)
-            .attr("width", 15)
-            .attr("height", 15)
-            .attr("fill", d => color(d));
+        .join("button")
+        .attr("type", "button")
+        .attr("class", "btn btn-outline-primary btn-sm m-1")
+        .style("background-color", d => color(d))
+        .style("color", "black")
+        .text(d => {
+            const countObj = genreCounts.find(g => g.genre === d);
+            const count = countObj ? countObj.count : 0;
+            return `${d} (${count})`;
+        })
+        .on("click", function(event, genre) {
+            highlight_circle(event, genre);
+        });
     
-    legend.selectAll("text")
-        .data(Array.from(allGenres))
-        .join("text")
-            .attr("x", 30)
-            .attr("y", (d, i) => i * 20 + 12)
-            .text(d => d)
-            .attr("font-size", "12px")
-            .attr("fill", "black");
+}
 
 
-});
+
+
+
+
+
+
+// Code Graveyard
+
+
+
+        //Limited x axis
+    // x_axis = d3.scaleLinear()
+    //     .domain([80,120]).nice()
+    //     .range([marginLeft, width - marginRight]);
+
+    // alternate fixed viewcount so we can observe more of the data
+    // y_axis = d3.scaleLinear()
+    //     .domain([1000000,15000000]).nice()
+    //     .range([height - marginBottom, marginTop]);
+
+
+    //size scale based on release date
+    // const size = d3.scaleLinear()
+    //     .domain([2015,2025])
+    //     .range([3, 15]);
+    //will not use - maybe works better for another feature like opacity or color if I were not using color for genre
+
+
+
+    //contours are not used in final version
+    // var contours = d3.contourDensity()
+    //         .x(d => x_axis(d.fixed_minutes))
+    //         .y(d => y_axis(d.Views))
+    //         .size([width, height])
+    //         .bandwidth(10)
+    //         .thresholds(10)
+    //         (data_movies);
+
+    //contours
+    // svg.append("g")
+    //         .attr("class", "contour-group")
+    //         .attr("fill", "none")
+    //         .attr("stroke", contour_color)
+    //         .attr("stroke-linejoin", "round")
+    //     .selectAll()
+    //     .data(contours)
+    //     .join("path")
+    //         .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
+    //         .attr("d", d3.geoPath());
+
+
+    // //legend for colors
+    // const legend = d3.select("#legend")
+    //     .append("svg")
+    //     .attr("width", 200)
+    //     .attr("height", 20 * allGenres.size)
+    //     .attr("viewBox", [0, 0, 200, 20 * allGenres.size])
+    //     .attr("style", "max-width: 100%; height: auto;")
+
+
+// legend.selectAll("rect")
+//         .data(Array.from(allGenres))
+//         .join("rect")
+//             .attr("x", 10)
+//             .attr("y", (d, i) => i * 20)
+//             .attr("width", 15)
+//             .attr("height", 15)
+//             .attr("fill", d => color(d))
+//             .style("cursor", "pointer")
+//             .on("click", highlight_circle);
+    
+//     legend.selectAll("text")
+//         .attr("class", "legend-text")
+//         .data(Array.from(allGenres))
+//         .join("text")
+//             .attr("x", 30)
+//             .attr("y", (d, i) => i * 20 + 12)
+//             .text(d => {
+//                 const countObj = genreCounts.find(g => g.genre === d);
+//                 const count = countObj ? countObj.count : 0;
+//                 return `${d} (${count})`;
+//             })
+//             .attr("font-size", "12px")
+//             .attr("fill", "white")
+//             .style("cursor", "pointer")
+//             .on("click", highlight_circle);
