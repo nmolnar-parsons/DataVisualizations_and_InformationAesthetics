@@ -37,3 +37,10 @@ p1{
 body {
     background-color: rgb(0, 0, 0);
 }
+
+.psuedo_footer {
+    margin: 10px;
+    font-size: 12px;
+    color: #e50914;
+    text-decoration: none;
+}

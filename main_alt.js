@@ -289,6 +289,7 @@ function loadChart_zoomed_in(data_movies) {
     console.log(typeof(MoviePerGenre));
   
 
+
     // Colorscale for genres
     const allGenres = new Set(); // ai helped with this
     data_movies.forEach(d => d.genres.forEach(g => allGenres.add(g)));
@@ -455,6 +456,9 @@ function loadChart_zoomed_in(data_movies) {
             .attr("opacity", d => genre_picker(d) === genre ? 1 : 0.1)
             .attr("pointer-events", d => genre_picker(d) === genre ? "auto" : "none");
     }
+    
+
+
 
     var legendDiv = d3.select("#legend2")
         .style("display", "flex")
@@ -480,6 +484,10 @@ function loadChart_zoomed_in(data_movies) {
         .on("click", function(event, genre) {
             highlight_circle(event, genre);
         });
+
+    //default highlight for second chart
+    const defaultGenre = ["Animation","Action"][0];
+    highlight_circle(null, defaultGenre);
     
 }
 
