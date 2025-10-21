@@ -242,7 +242,7 @@ function loadChart(data_movies) {
         .style("align-items", "stretch"); // optional, makes buttons fill width
 
 
-
+    legendDiv.html('<div style="font-weight:bold; color: white; font-size:20px; margin-bottom:8px;">Filter:</div>');
 
     // Add a button for each genre
     legendDiv.selectAll("button")
@@ -479,7 +479,7 @@ function loadChart_zoomed_in(data_movies) {
         .style("flex-direction", "column")
         .style("align-items", "stretch"); // optional, makes buttons fill width
 
-
+    legendDiv.html('<div style="font-weight:bold; color: white; font-size:20px; margin-bottom:8px;">Filter:</div>');
 
 
     // Add a button for each genre
