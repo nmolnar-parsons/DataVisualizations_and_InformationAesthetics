@@ -152,6 +152,9 @@ function loadChart(data_movies) {
             svg.selectAll("circle").attr("opacity", 1)
             //reset pointer events
             svg.selectAll("circle").attr("pointer-events", "auto")
+            //reset highlighted legend button
+            d3.selectAll("#legend button")
+                .style("border-width", "1px");
         })
         .style("background", "black");
 
@@ -228,6 +231,9 @@ function loadChart(data_movies) {
         svg.selectAll("circle")
             .attr("opacity", d => genre_picker(d) === genre ? 1 : 0.1)
             .attr("pointer-events", d => genre_picker(d) === genre ? "auto" : "none");
+        //highlight selected legend button
+        d3.selectAll("#legend button")
+            .style("border-width", d => d === genre ? "5px" : "1px");
     }
 
     const legendDiv = d3.select("#legend")
@@ -246,6 +252,8 @@ function loadChart(data_movies) {
         .attr("class", "btn btn-outline-primary btn-sm m-1")
         .style("background-color", d => color(d))
         .style("color", "black")
+        .style("width", "180px")
+        .style("box-sizing", "border-box") 
         .text(d => {
             const countObj = genreCounts.find(g => g.genre === d);
             const count = countObj ? countObj.count : 0;
@@ -379,6 +387,9 @@ function loadChart_zoomed_in(data_movies) {
             svg.selectAll("circle").attr("opacity", 1)
             //reset pointer events
             svg.selectAll("circle").attr("pointer-events", "auto")
+            //reset legend button borders
+            d3.selectAll("#legend2 button")
+                .style("border-width", "1px");
         })
         .style("background", "black");
 
@@ -455,6 +466,9 @@ function loadChart_zoomed_in(data_movies) {
         svg.selectAll("circle")
             .attr("opacity", d => genre_picker(d) === genre ? 1 : 0.1)
             .attr("pointer-events", d => genre_picker(d) === genre ? "auto" : "none");
+        //highlight selected legend button
+        d3.selectAll("#legend2 button")
+            .style("border-width", d => d === genre ? "5px" : "1px");
     }
     
 
@@ -476,6 +490,8 @@ function loadChart_zoomed_in(data_movies) {
         .attr("class", "btn btn-outline-primary btn-sm m-1")
         .style("background-color", d => color(d))
         .style("color", "black")
+        .style("width", "180px")
+        .style("box-sizing", "border-box") 
         .text(d => {
             const countObj = genreCounts.find(g => g.genre === d);
             const count = countObj ? countObj.count : 0;
@@ -488,6 +504,9 @@ function loadChart_zoomed_in(data_movies) {
     //default highlight for second chart
     const defaultGenre = ["Animation","Action"][0];
     highlight_circle(null, defaultGenre);
+    //highlight selected legend button
+    legendDiv.selectAll("button")
+        .style("border-width", d => d === defaultGenre ? "5px" : "1px");
     
 }
 
