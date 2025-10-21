@@ -5,6 +5,19 @@
 
 
 
+
+//things to change:
+//tooltip turns white
+//contour around genres
+//legend box remove
+    // just do checkmarks instead
+    // add a "unclick all" button
+
+//text alignment should be unified across all text
+// a little bit of color rebalancing so the yellow "animation" genre doesn't DOMINATE
+    // or could use this to my advtange. Action and animation are important, so highlight them
+
+
 // load data
 
 data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies) {
