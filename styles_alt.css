@@ -1,4 +1,4 @@
-#legend{
+.legend{
     position: absolute;
     top: 10px;
     right: 10px;
@@ -10,6 +10,7 @@
     background-color: 	#780909;
     border-radius: 6px;
 }
+
 
 
 p1{
@@ -27,7 +28,7 @@ p1{
     stroke: white;
 }
 
-#canvas{
+.canvas{
     position: relative;
     background-color: black;
 

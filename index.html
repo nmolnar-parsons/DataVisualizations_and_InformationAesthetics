@@ -85,25 +85,24 @@
     </style>
 </head>
 </head>
+
 <body>
     <script src = "main_alt.js"></script>
+
     <header>
         <h1>What We Watched, Jan-June 2025</h1>
     </header>
     
     <div id="content">
-        
-        
-        <div class="snap-child" id="zoomed_in">
+        <div class="snap-child canvas" id="canvas">
+            
+            <div class = "legend" id="legend"></div>
         </div>
-        
-        <div class="snap-child" id="canvas">
-            <div id="legend"></div>
-        </div>
+        <h2>We looked at 1850 movies watched on Netlfix in 2025.</h2>
 
 
         <div class="snap-child" id = "top10">
-            <h2>The top 10 most popular movies by Views in the first half of 2025:</h2>
+            <h2>The top 10 most popular movies by Views:</h2>
             <list id="top10_list">
                 <ol>
                     <li>Back in Action</li>
@@ -120,6 +119,11 @@
             </list>
             <h2>were between 80 minutes at 130 minutes long.</h2>
             <h3>6 are action, 3 are animation, 1 is drama, and 1 is romance.</h3>
+        </div>
+
+        <div class="snap-child canvas" id="zoomed_in">
+            <h2>Cutting off the outliers, Animation and Action films are the standout genres.</h2>
+            <div class = "legend"  id="legend2"></div>
         </div>
     </div>
     <!-- <footer>
