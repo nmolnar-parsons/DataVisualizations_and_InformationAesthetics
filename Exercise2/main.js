@@ -7,7 +7,7 @@
 
 // load data
 
-data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies) {
+data_movies = d3.csv("Data/NetflixTV_added.csv").then( function(data_movies) {
     console.log(data_movies);
     console.log(typeof(data_movies[0]['runtimeMinutes']));
 
@@ -45,7 +45,7 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
  
     //X axis
     x_axis = d3.scaleLinear()
-        .domain(d3.extent(data_movies, d => d.fixed_minutes)).nice()
+        .domain([0,1500]).nice()
         .range([marginLeft, width - marginRight]);
 
     //Limited x axis
@@ -125,7 +125,7 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
 
     var mousemove = function(event, d) {
         tooltip
-            .html(d.primaryTitle + "<br>" + d.genres)
+            .html(d.Title + "<br>" + d.genres)
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY + 10) + "px");
     }
@@ -172,28 +172,28 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
             .text("Views"));
 
 
-    var contours = d3.contourDensity()
-            .x(d => x_axis(d.fixed_minutes))
-            .y(d => y_axis(d.Views))
-            .size([width, height])
-            .bandwidth(10)
-            .thresholds(10)
-            (data_movies);
+    // var contours = d3.contourDensity()
+    //         .x(d => x_axis(d.fixed_minutes))
+    //         .y(d => y_axis(d.Views))
+    //         .size([width, height])
+    //         .bandwidth(10)
+    //         .thresholds(10)
+    //         (data_movies);
 
-        //contours
-        svg.append("g")
-                .attr("class", "contour-group")
-                .attr("fill", "none")
-                .attr("stroke", contour_color)
-                .attr("stroke-linejoin", "round")
-            .selectAll()
-            .data(contours)
-            .join("path")
-                .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
-                .transition()
-                .delay((d, i) => i * 100) // 100ms delay per contour
-                .duration(1000)
-                .attr("d", d3.geoPath());
+    //     //contours
+    //     svg.append("g")
+    //             .attr("class", "contour-group")
+    //             .attr("fill", "none")
+    //             .attr("stroke", contour_color)
+    //             .attr("stroke-linejoin", "round")
+    //         .selectAll()
+    //         .data(contours)
+    //         .join("path")
+    //             .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
+    //             .transition()
+    //             .delay((d, i) => i * 100) // 100ms delay per contour
+    //             .duration(1000)
+    //             .attr("d", d3.geoPath());
     
 
     // // append dots
@@ -269,134 +269,134 @@ data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies)
         .on("mousemove", mousemove )
         .on("mouseleave", mouseleave ); //these are nonfunctional with brushing enabled
 
-    const brush = d3.brush()
-        .extent([[marginLeft, marginTop], [width - marginRight, height - marginBottom]])
-        .on("end", updateChart);
+    // const brush = d3.brush()
+    //     .extent([[marginLeft, marginTop], [width - marginRight, height - marginBottom]])
+    //     .on("end", updateChart);
 
-    svg.append("g")
-        .attr("class", "brush")
-        .call(brush);
+    // svg.append("g")
+    //     .attr("class", "brush")
+    //     .call(brush);
 
-    function updateChart(event) {
-        const extent = event.selection;
-        if (!extent) return;
+    // function updateChart(event) {
+    //     const extent = event.selection;
+    //     if (!extent) return;
 
-        // Convert pixel boundaries to data boundaries
-        const x0 = x_axis.invert(extent[0][0]);
-        const x1 = x_axis.invert(extent[1][0]);
-        const y0 = y_axis.invert(extent[1][1]); // Note: SVG y-axis is inverted
-        const y1 = y_axis.invert(extent[0][1]);
+    //     // Convert pixel boundaries to data boundaries
+    //     const x0 = x_axis.invert(extent[0][0]);
+    //     const x1 = x_axis.invert(extent[1][0]);
+    //     const y0 = y_axis.invert(extent[1][1]); // Note: SVG y-axis is inverted
+    //     const y1 = y_axis.invert(extent[0][1]);
 
-        // Update axis domains
-        x_axis.domain([x0, x1]);
-        y_axis.domain([y0, y1]);
+    //     // Update axis domains
+    //     x_axis.domain([x0, x1]);
+    //     y_axis.domain([y0, y1]);
 
-        // Redraw axes
-        svg.select(".x-axis")
-            .transition()
-            .duration(1000)
-            .call(d3.axisBottom(x_axis).tickSizeOuter(0));
+    //     // Redraw axes
+    //     svg.select(".x-axis")
+    //         .transition()
+    //         .duration(1000)
+    //         .call(d3.axisBottom(x_axis).tickSizeOuter(0));
 
-        svg.select(".y-axis")
-            .transition()
-            .duration(1000)
-            .call(d3.axisLeft(y_axis).tickSizeOuter(0));
+    //     svg.select(".y-axis")
+    //         .transition()
+    //         .duration(1000)
+    //         .call(d3.axisLeft(y_axis).tickSizeOuter(0));
 
-        // Reposition dots
-        dotsGroup.selectAll("circle")
-            .transition()
-            .duration(1000)
-            .attr("cx", d => x_axis(d.fixed_minutes))
-            .attr("cy", d => y_axis(d.Views));
+    //     // Reposition dots
+    //     dotsGroup.selectAll("circle")
+    //         .transition()
+    //         .duration(1000)
+    //         .attr("cx", d => x_axis(d.fixed_minutes))
+    //         .attr("cy", d => y_axis(d.Views));
 
-        // Remove old contours
-        svg.selectAll(".contour-group").remove();
+    //     // Remove old contours
+    //     svg.selectAll(".contour-group").remove();
         
-        // Density Contours from (https://observablehq.com/@d3/density-contours)
-        var contours = d3.contourDensity()
-            .x(d => x_axis(d.fixed_minutes))
-            .y(d => y_axis(d.Views))
-            .size([width, height])
-            .bandwidth(10)
-            .thresholds(10)
-            (data_movies);
+    //     // Density Contours from (https://observablehq.com/@d3/density-contours)
+    //     var contours = d3.contourDensity()
+    //         .x(d => x_axis(d.fixed_minutes))
+    //         .y(d => y_axis(d.Views))
+    //         .size([width, height])
+    //         .bandwidth(10)
+    //         .thresholds(10)
+    //         (data_movies);
 
-        //contours
-        svg.append("g")
-                .attr("class", "contour-group")
-                .attr("fill", "none")
-                .attr("stroke", contour_color)
-                .attr("stroke-linejoin", "round")
-            .selectAll()
-            .data(contours)
-            .join("path")
-                .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
-                .transition()
-                .delay((d, i) => i * 100) // 100ms delay per contour
-                .duration(1000)
-                .attr("d", d3.geoPath());
+    //     //contours
+    //     svg.append("g")
+    //             .attr("class", "contour-group")
+    //             .attr("fill", "none")
+    //             .attr("stroke", contour_color)
+    //             .attr("stroke-linejoin", "round")
+    //         .selectAll()
+    //         .data(contours)
+    //         .join("path")
+    //             .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
+    //             .transition()
+    //             .delay((d, i) => i * 100) // 100ms delay per contour
+    //             .duration(1000)
+    //             .attr("d", d3.geoPath());
 
 
-        // Remove brush selection
-        svg.select(".brush").call(brush.move, null);
+    //     // Remove brush selection
+    //     svg.select(".brush").call(brush.move, null);
 
-    }
+    // }
 
-    svg.on("dblclick", function() {
-        // Reset axis domains to full data extent
-        x_axis.domain(d3.extent(data_movies, d => d.fixed_minutes)).nice();
-        y_axis.domain(d3.extent(data_movies, d => d.Views)).nice();
+    // svg.on("dblclick", function() {
+    //     // Reset axis domains to full data extent
+    //     x_axis.domain(d3.extent(data_movies, d => d.fixed_minutes)).nice();
+    //     y_axis.domain(d3.extent(data_movies, d => d.Views)).nice();
 
-        // Redraw axes 
-        svg.select(".x-axis")
-            .transition()
-            .duration(1000)
-            .call(d3.axisBottom(x_axis).tickSizeOuter(0));
-        svg.select(".y-axis")
-            .transition()
-            .duration(1000)
-            .call(d3.axisLeft(y_axis).tickSizeOuter(0));
+    //     // Redraw axes 
+    //     svg.select(".x-axis")
+    //         .transition()
+    //         .duration(1000)
+    //         .call(d3.axisBottom(x_axis).tickSizeOuter(0));
+    //     svg.select(".y-axis")
+    //         .transition()
+    //         .duration(1000)
+    //         .call(d3.axisLeft(y_axis).tickSizeOuter(0));
 
-        // Reposition dots
-        dotsGroup.selectAll("circle")
-            .transition()
-            .duration(1000)
-            .attr("cx", d => x_axis(d.fixed_minutes))
-            .attr("cy", d => y_axis(d.Views));
+    //     // Reposition dots
+    //     dotsGroup.selectAll("circle")
+    //         .transition()
+    //         .duration(1000)
+    //         .attr("cx", d => x_axis(d.fixed_minutes))
+    //         .attr("cy", d => y_axis(d.Views));
 
-        //redraw contours
-        // Remove old contours
-        svg.selectAll(".contour-group").remove();
+    //     //redraw contours
+    //     // Remove old contours
+    //     svg.selectAll(".contour-group").remove();
 
-        // Recompute contours
-        var contours = d3.contourDensity()
-            .x(d => x_axis(d.fixed_minutes))
-            .y(d => y_axis(d.Views))
-            .size([width, height])
-            .bandwidth(10)
-            .thresholds(10)
-            (data_movies);
+    //     // Recompute contours
+    //     var contours = d3.contourDensity()
+    //         .x(d => x_axis(d.fixed_minutes))
+    //         .y(d => y_axis(d.Views))
+    //         .size([width, height])
+    //         .bandwidth(10)
+    //         .thresholds(10)
+    //         (data_movies);
 
-        //contours
-        svg.append("g")
-            .attr("class", "contour-group")
-            .attr("fill", "none")
-            .attr("stroke", contour_color)
-            .attr("stroke-linejoin", "round")
-        .selectAll("path")
-        .data(contours)
-        .join("path")
-            .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
-            .transition()
-            .delay((d, i) => i * 200)
-            .duration(1000)
-            .attr("d", d3.geoPath());
+    //     //contours
+    //     svg.append("g")
+    //         .attr("class", "contour-group")
+    //         .attr("fill", "none")
+    //         .attr("stroke", contour_color)
+    //         .attr("stroke-linejoin", "round")
+    //     .selectAll("path")
+    //     .data(contours)
+    //     .join("path")
+    //         .attr("stroke-width", (d, i) => i % 5 ? 0.25 : 1)
+    //         .transition()
+    //         .delay((d, i) => i * 200)
+    //         .duration(1000)
+    //         .attr("d", d3.geoPath());
 
         
-        // Re-enable brush overlay for further brushing
-        svg.select(".brush").selectAll(".overlay")
-            .style("pointer-events", "all");
-    });
+    //     // Re-enable brush overlay for further brushing
+    //     svg.select(".brush").selectAll(".overlay")
+    //         .style("pointer-events", "all");
+    // });
 
 
 });
