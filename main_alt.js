@@ -22,6 +22,7 @@
 
 data_movies = d3.csv("Data/NetflixMovies_added.csv").then( function(data_movies) {
     console.log(data_movies);
+    console.log(typeof(data_movies));
     console.log(typeof(data_movies[0]['runtimeMinutes']));
 
 

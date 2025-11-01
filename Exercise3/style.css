@@ -1,0 +1,128 @@
+.legend{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    max-height: 900px;
+    overflow-y: auto;
+    background-color: 	#780909;
+    border-radius: 6px;
+}
+
+
+
+p1{
+    text-align: left;
+    font-size: 14px;
+    margin: 20px 20px 10px 40px;
+    color: #e50914;
+}
+
+.scatter_x-axis text, .scatter_y-axis text {
+    fill: white;
+    font-size: 12px;
+}
+.scatter_x-axis path, .scatter_x-axis line, .scatter_y-axis path, .scatter_y-axis line {
+    stroke: white;
+}
+
+.canvas{
+    position: relative;
+    background-color: black;
+
+}
+
+body {
+    background-color: rgb(0, 0, 0);
+}
+
+.psuedo_footer {
+    margin: 10px;
+    font-size: 12px;
+    color: #e50914;
+    text-decoration: none;
+}
+
+body {
+    background-color: rgb(0, 0, 0);
+    /* I need to do this here my CSS file is not doing it */
+}
+h1 {
+    text-align: left;
+    font-size: 50px;
+    margin: 20px 20px 10px 40px;
+    color: #e50914;
+}
+
+#footer_link {
+    margin: 0;
+    padding-left: 10px;
+    color: #780909;
+    text-decoration: underline;
+}
+#footer_text {
+    margin: 0;
+    padding-left: 10px;
+    text-decoration: none;
+    color: #780909;
+}
+#top10 {
+    height: 90vh;
+    width: auto;
+}
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: black;
+}
+
+/* footer {
+    bottom: 0;
+    z-index: 100;
+    background: black; 
+    width: 100%;
+    padding: 10px 0;
+} */
+#content {
+    position: relative;
+    background: transparent;
+    background-color: black;
+    overflow-y: auto; /* make it scrollable */
+    height: 100vh;     /* set a height so it can scroll */
+}
+
+.snap-child {
+    scroll-snap-align: start;
+    /* height: ...; set a height if needed */
+}
+h2 {
+    color: white;
+    font-size: 50px;
+    margin-left: 20px;
+}
+ol{
+    padding-left: 20;
+}
+li {
+    color: white;
+    font-size: 40px;
+    margin-left: 50px;
+}
+h3 {
+    color: white;
+    font-size: 30px;
+    margin-left: 20px;
+}
+#plots {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px; /* optional: space between plots */
+}
+#plots svg {
+    display: block;
+}
