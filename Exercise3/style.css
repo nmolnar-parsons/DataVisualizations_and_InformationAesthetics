@@ -9,6 +9,7 @@
     overflow-y: auto;
     background-color: 	#780909;
     border-radius: 6px;
+    fill: white;
 }
 
 
@@ -27,6 +28,16 @@ p1{
 .scatter_x-axis path, .scatter_x-axis line, .scatter_y-axis path, .scatter_y-axis line {
     stroke: white;
 }
+
+.bar_x-axis text, .bar_y-axis text {
+    fill: white;
+    font-size: 12px;
+}
+.bar_x-axis path, .bar_x-axis line, .bar_y-axis path, .bar_y-axis line {
+    stroke: white;
+}
+
+
 
 .canvas{
     position: relative;
@@ -116,6 +127,13 @@ h3 {
     font-size: 30px;
     margin-left: 20px;
 }
+
+h4 {
+    color: white;
+    font-size: 20px;
+    margin-left: 20px;
+}
+
 #plots {
     display: flex;
     flex-direction: row;
@@ -125,4 +143,15 @@ h3 {
 }
 #plots svg {
     display: block;
+}
+
+.top-menu {
+  width: 100%;
+  margin-bottom: 20px;
+  z-index: 10;
+  position: relative;
+}
+
+.checkbox-genre label {
+  color: white;
 }
