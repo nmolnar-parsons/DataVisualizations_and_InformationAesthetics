@@ -31,8 +31,9 @@
 
 
 
-let dimensions = [window.innerWidth/1.9, window.innerHeight*0.8] // dimensions shared for each plot
-let margins = {top: 20, right: 120, bottom: 30, left: 80}; // shared 
+let dimensions = [window.innerWidth/2.2, window.innerHeight*0.8] // dimensions shared for each plot
+let margins = {top: 20, right: 50, bottom: 30, left: 40};
+
 
 
 
@@ -121,10 +122,7 @@ function initializeLayout(){
     topmenu.append("div").attr("class", "title").html(`
       <h4>Select a Genre</h4>
     `);
-    topmenu.append("div").attr("class", "filters")
-        .style("display", "flex")
-        .style("flex-direction", "row")
-        .style("gap", "16px"); // add some spacing between checkboxes
+    topmenu.append("div").attr("class", "filters");
 
         //add checkboxes for each genre
     const checkGenre = topmenu.select(".filters")
@@ -238,10 +236,16 @@ function onCheckboxChange(genre){
 
 
 function draw(){
-    // data will be changed here based on state filters
+    // Helper to get the genre used for color and filtering (always agrees)
+    function getColorGenre(d) {
+        if (d.genres.includes("Animation")) return "Animation";
+        if (d.genres.includes("Romance")) return "Romance";
+        return d.genres[0];
+    }
+
+    // Filter data: only include movies whose color genre is checked
     let filteredData = data.filter(d => {
-        // check if any of the movie's genres are in the checked genres
-        return d.genres.some(genre => state.filters.checked.includes(genre));
+        return state.filters.checked.includes(getColorGenre(d));
     });
     
 
@@ -267,10 +271,14 @@ function draw(){
 
     // draw points (update pattern)
     const points = scatterplot_svg.selectAll(".point")
-        .data(filteredData, d => d.primaryTitle); // use title as key
+        .data(filteredData, d => d.primaryTitle);
 
     // EXIT old points
-    points.exit().remove();
+    points.exit()
+        .transition()
+        .duration(400)
+        .attr("r", 0)
+        .remove();
 
     // UPDATE existing points
     points
@@ -278,7 +286,7 @@ function draw(){
         .duration(400)
         .attr("cx", d => x_scale(d.fixed_minutes))
         .attr("cy", d => y_scale(d.Views))
-        .attr("fill", d => color_scale(getFirstCheckedGenre(d)));
+        .attr("fill", d => color_scale(getColorGenre(d)));
 
     // ENTER new points
     points.enter()
@@ -286,20 +294,29 @@ function draw(){
         .attr("class", "point")
         .attr("cx", d => x_scale(d.fixed_minutes))
         .attr("cy", d => y_scale(d.Views))
-        .attr("r", 3)
-        .attr("fill", d => color_scale(getFirstCheckedGenre(d)))
+        .attr("r", 0)
+        .attr("fill", d => color_scale(getColorGenre(d)))
         .on("mouseover", function(event, d) {
             tooltip
                 .style("display", "block")
                 .html(
                     `<strong>${d.primaryTitle}</strong><br/>
-                    Runtime: ${d.fixed_minutes} min<br/>
-                    Views: ${d3.format(",")(d.Views)}`
+                    ${d.fixed_minutes} min<br/>
+                    ${d.genres.join(", ")}<br/>
+                    ${d3.format(",")(d.Views)} views`
                 );
             d3.select(this)
                 .attr("stroke", "#fff")
                 .attr("stroke-width", 2)
-                .attr("r", 6);
+                .attr("r", 8); // increase r to 8 on hover
+
+            // --- Highlight bars in barplot if word in title matches ---
+            // Remove colons before splitting
+            const hoveredWords = new Set(
+                d.primaryTitle.replace(/:/g, "").split(" ").map(w => w.toLowerCase())
+            );
+            d3.selectAll("#barplot_svg .bar")
+                .attr("fill", barD => hoveredWords.has(barD.word.toLowerCase()) ? "#ff8000ff" : "#e50914");
         })
         .on("mousemove", function(event) {
             tooltip
@@ -311,8 +328,15 @@ function draw(){
             d3.select(this)
                 .attr("stroke", null)
                 .attr("stroke-width", null)
-                .attr("r", 3);
-        });
+                .attr("r", 6); // decrease r back to 6 on mouseleave
+
+            // --- Remove bar highlight on mouse leave ---
+            d3.selectAll("#barplot_svg .bar")
+                .attr("fill", "#e50914");
+        })
+        .transition()
+        .duration(500)
+        .attr("r", 6);
 
     // update axes
     scatterplot_svg.select(".scatter_x-axis")
@@ -334,11 +358,12 @@ function draw(){
     
     // Get word frequencies from titles
     let words = [];
-    const wordsNotIncluded = new Set(["the", "of", "a", "&", "-", "and"]);
+    const wordsNotIncluded = new Set(["The", "the", "of", "a", "A", "&", "-", "and", "to", "in"]);
     filteredData.forEach(d => {
-        let title_words = d.primaryTitle.split(" ");
+        // Remove colons before splitting
+        let title_words = d.primaryTitle.replace(/:/g, "").split(" ");
         title_words.forEach(word => {
-            let w = word.toLowerCase();
+            let w = word;
             if (!wordsNotIncluded.has(w)) {
                 words.push(w);
             }
@@ -351,7 +376,35 @@ function draw(){
     const d3word_rollup = d3
         .rollup(words, v => v.length, d => d);
 
+
+
+        
+
+
+
+    // // Map to sum views for each word in titles
+    // const wordViewsMap = new Map();
+    // filteredData.forEach(d => {
+    //     // Remove colons before splitting
+    //     let title_words = d.primaryTitle.replace(/:/g, "").split(" ");
+    //     title_words.forEach(word => {
+    //         let w = word.toLowerCase();
+    //         if (!wordsNotIncluded.has(w)) {
+    //             wordViewsMap.set(w, (wordViewsMap.get(w) || 0) + d.Views);
+    //         }
+    //     });
+    // });
+    // // Example: convert to array and sort by total views
+    // const wordViewsArray = Array.from(wordViewsMap, ([word, totalViews]) => ({ word, totalViews }));
+    // wordViewsArray.sort((a, b) => d3.descending(a.totalViews, b.totalViews));
+    // console.log("Words sorted by total views:");
+    // console.log(wordViewsArray);
+
+
+
     const barData = Array.from(d3word_rollup, ([word, count]) => ({word, count}));
+    console.log(barData);
+
     // sort descending by count and take top 20
     barData.sort((a, b) => d3.descending(a.count, b.count));
     const topBarData = barData.slice(0, 30);
@@ -388,7 +441,37 @@ function draw(){
         .attr("y", d => y_scale_bar(d.count))
         .attr("width", x_scale_bar.bandwidth())
         .attr("height", d => y_scale_bar.range()[0] - y_scale_bar(d.count))
-        .attr("fill", "#e50914");
+        .attr("fill", "#e50914")
+        .on("mouseover", function(event, d) {
+            // Highlight scatterplot points whose title contains this word
+            const barWord = d.word.toLowerCase();
+            const matchingTitles = new Set();
+            d3.selectAll("#scatterplot_svg .point").each(function(pointD) {
+                const words = pointD.primaryTitle.replace(/:/g, "").toLowerCase().split(" ");
+                if (words.includes(barWord)) {
+                    matchingTitles.add(pointD.primaryTitle);
+                    // Bring to front
+                    this.parentNode.appendChild(this);
+                }
+            });
+            // now highlight the points
+            d3.selectAll("#scatterplot_svg .point")
+                .attr("r", pointD => matchingTitles.has(pointD.primaryTitle) ? 8 : 6)
+                .attr("stroke", pointD => matchingTitles.has(pointD.primaryTitle) ? "#fff" : null)
+                .attr("stroke-width", pointD => matchingTitles.has(pointD.primaryTitle) ? 2 : null);
+            //Highlight the bar itself
+            d3.select(this).attr("fill", "#ff8000ff");
+        })
+        .on("mouseleave", function(event, d) {
+            // Remove highlight from scatterplot points
+            d3.selectAll("#scatterplot_svg .point")
+                .attr("fill", pointD => color_scale(getColorGenre(pointD)))
+                .attr("r", 6)
+                .attr("stroke", null)
+                .attr("stroke-width", null);
+            // Restore bar color
+            d3.select(this).attr("fill", "#e50914");
+        });
 
     // update axes
     barplot_svg.select(".bar_x-axis")
@@ -407,12 +490,12 @@ function draw(){
     // UPDATE existing labels
     labels.transition()
         .duration(400)
-        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2)
-        .attr("y", d => y_scale_bar(d.count) - 5)
+        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10)
+        .attr("y", d => y_scale_bar(d.count) - 14)
         .attr("transform", d => {
-            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2;
-            const y = y_scale_bar(d.count) - 5;
-            return `rotate(-90, ${x}, ${y})`;
+            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10;
+            const y = y_scale_bar(d.count) - 14;
+            return `rotate(-45, ${x}, ${y})`;
         })
         .text(d => d.word);
 
@@ -420,14 +503,14 @@ function draw(){
     labels.enter()
         .append("text")
         .attr("class", "bar-label")
-        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2)
-        .attr("y", d => y_scale_bar(d.count) - 5)
+        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10)
+        .attr("y", d => y_scale_bar(d.count) - 14)
         .attr("text-anchor", "middle")
         .attr("fill", "white")
         .attr("transform", d => {
-            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2;
-            const y = y_scale_bar(d.count) - 5;
-            return `rotate(-90, ${x}, ${y})`;
+            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10;
+            const y = y_scale_bar(d.count) - 14;
+            return `rotate(-45, ${x}, ${y})`;
         })
         .text(d => d.word)
         .style("opacity", 0)
