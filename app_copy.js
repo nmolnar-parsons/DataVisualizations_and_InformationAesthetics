@@ -51,9 +51,15 @@ const colorScale = d3.scaleSequential()
     .clamp(true)
 
 // Initialize map
-const map = L.map('map').setView([20, 0], 2)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+const map = L.map('map').setView([10, 30], 2)
+// L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     attribution: '© OpenStreetMap contributors'
+// }).addTo(map)
+
+var CartoDB_DarkMatterNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
 }).addTo(map)
 
 let geoJsonLayer = null
@@ -70,7 +76,7 @@ function renderMap() {
             return {
                 fillColor: meanRuntime > 0 ? colorScale(meanRuntime) : '#f0f0f0',
                 weight: 1,
-                color: '#666',
+                color: '#000000ff',
                 fillOpacity: meanRuntime > 0 ? 0.7 : 0.3
             }
         },
@@ -90,6 +96,11 @@ function renderMap() {
                 layer.on('mouseover', function() { this.openTooltip() })
                 layer.on('mouseout', function() { this.closeTooltip() })
             }
+            // Log the fill color when the country is clicked
+            layer.on('click', function(e) {
+                const style = layer.options
+                console.log('Country color:', style.fillColor)
+            })
         }
     }).addTo(map)
 }

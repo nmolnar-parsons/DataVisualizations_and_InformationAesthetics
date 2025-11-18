@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>COPY</title>
+    <title>Netflix Geographic</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -14,7 +14,7 @@
       }
       body{
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        color:#222;
+        color:#000000;
       }
       #map{
         width:100vw;
@@ -25,7 +25,7 @@
         bottom:10px;
         left:10px;
         z-index:1000;
-        background:rgba(255,255,255,0.9);
+        background:rgba(255, 1, 1, 0.718);
         padding:0.5rem 0.8rem;
         border-radius:4px;
         font-size:3rem;
@@ -38,17 +38,16 @@
         display: flex;
         align-items: center;
         gap: 0.7em;
-        margin-left: 1em;
       }
       #legend-label {
         font-size: 2rem;
-        color: #333;
+        color: #000000;
         text-align: center;
       }
       #legend-bar {
         width: 220px;
         height: 1em;
-        background: linear-gradient(to right, orange, blue);
+        background: linear-gradient(to right, rgb(254, 232, 202), rgb(127, 0, 0));
         border-radius: 6px;
         border: 1px solid #ccc;
         margin: 0 0.3em;
@@ -90,7 +89,7 @@
     <div id="caption">
       Which countries have the longest movies?
       <div id="legend-container">
-        <span id="legend-label">90 min</span>
+        <span id="legend-label">90</span>
         <div id="legend-bar"></div>
         <span id="legend-label">140 min</span>
       </div>
