@@ -8,10 +8,86 @@ const moviesData = await d3.csv('Data/NetflixMovies_production_cleaned.csv')
 
 console.log(`Loaded ${moviesData.length} movies`)
 
+// --- Genre Filter UI ---
+const GENRES = [
+    "All", "Action", "Comedy", "Drama", "Romance",
+    "Adventure", "Animation", "Documentary", "Horror"
+]
+let selectedGenres = new Set(GENRES.slice(1)) // All except "All" by default
+
+function createGenreFilters() {
+    let container = document.getElementById('genre-filters')
+    if (!container) {
+        container = document.createElement('div')
+        container.id = 'genre-filters'
+        container.style.position = 'absolute'
+        container.style.top = '10px'
+        container.style.right = '10px'
+        container.style.zIndex = 1100
+        container.style.background = 'rgba(255, 1, 1, 0.718)'
+        container.style.padding = '0.5em 1em'
+        container.style.borderRadius = '4px'
+        container.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'
+        container.style.display = 'flex'
+        container.style.flexDirection = 'column'
+        container.style.gap = '0.5em'
+        document.body.appendChild(container)
+    }
+    container.innerHTML = `
+        <div class="genre-label">Select Genre</div>
+        ${GENRES.map(genre =>
+            `<button class="genre-btn${selectedGenres.has(genre) || (genre === "All" && selectedGenres.size === 8) ? ' active' : ''}" data-genre="${genre}">${genre}</button>`
+        ).join('')}
+    `
+    // Button click handler
+    container.querySelectorAll('.genre-btn').forEach(btn => {
+        btn.onclick = function() {
+            const genre = btn.getAttribute('data-genre')
+            if (genre === "All") {
+                selectedGenres = new Set(GENRES.slice(1))
+            } else {
+                selectedGenres = new Set([genre])
+            }
+            createGenreFilters() // update button states
+            renderMap()
+        }
+    })
+}
+
+// Add CSS for active/inactive genre buttons
+if (!document.getElementById('genre-btn-style')) {
+    const style = document.createElement('style')
+    style.id = 'genre-btn-style'
+    style.innerHTML = `
+        #genre-filters .genre-btn {
+            border: 1px solid #aaa;
+            background: #f7f7f7;
+            color: #333;
+            border-radius: 4px;
+            padding: 0.3em 0.8em;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        #genre-filters .genre-btn.active {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+    `
+    document.head.appendChild(style)
+}
+
+createGenreFilters()
+
 // Group movies by country and compute mean RuntimeMinutes
 function groupByCountryFromCSV(data) {
     const map = new Map()
     data.forEach(item => {
+        // Filter by selected genres
+        const genres = (item.genres || '').split(',').map(g => g.trim())
+        if (!genres.some(g => selectedGenres.has(g))) return
+
         let countries = []
         try {
             const arr = JSON.parse(item.productionCountries.replace(/'/g, '"'))
@@ -25,7 +101,7 @@ function groupByCountryFromCSV(data) {
         countries.forEach(country => {
             if (!map.has(country)) map.set(country, [])
             map.get(country).push({
-                title: item.searched || item.Title || item.name, // Use "searched" column
+                title: item.searched || item.Title || item.name,
                 runtime: Number(item.RuntimeMinutes) || 0
             })
         })
