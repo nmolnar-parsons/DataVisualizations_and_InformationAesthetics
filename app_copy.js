@@ -2,6 +2,8 @@
 // Maps Netflix content by production country using TMDB API data
 
 
+// import * as d3 from './node-modules/d3.js'
+
 // Load GeoJSON and Netflix data
 const geojson = await d3.json('Data/countries.geojson')
 const moviesData = await d3.csv('Data/NetflixMovies_production_cleaned.csv')
