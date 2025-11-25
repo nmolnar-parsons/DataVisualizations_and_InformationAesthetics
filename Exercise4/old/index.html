@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Netflix Geographic</title>
+    <title>COPY</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -14,7 +14,7 @@
       }
       body{
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        color:#000000;
+        color:#222;
       }
       #map{
         width:100vw;
@@ -25,7 +25,7 @@
         bottom:10px;
         left:10px;
         z-index:1000;
-        background:rgba(255, 1, 1, 0.718);
+        background:rgba(255,255,255,0.9);
         padding:0.5rem 0.8rem;
         border-radius:4px;
         font-size:3rem;
@@ -38,16 +38,17 @@
         display: flex;
         align-items: center;
         gap: 0.7em;
+        margin-left: 1em;
       }
       #legend-label {
         font-size: 2rem;
-        color: #000000;
+        color: #333;
         text-align: center;
       }
       #legend-bar {
         width: 220px;
         height: 1em;
-        background: linear-gradient(to right, rgb(254, 232, 202), rgb(127, 0, 0));
+        background: linear-gradient(to right, orange, blue);
         border-radius: 6px;
         border: 1px solid #ccc;
         margin: 0 0.3em;
@@ -79,11 +80,6 @@
         font-size: 0.5rem;
         color: #333;
       }
-      #genre-filters .genre-label {
-        font-weight: bold;
-        margin-bottom: 0.5em;
-        text-align: center;
-      }
     </style>
   </head>
   <body>
@@ -94,13 +90,13 @@
     <div id="caption">
       Which countries have the longest movies?
       <div id="legend-container">
-        <span id="legend-label">90</span>
+        <span id="legend-label">90 min</span>
         <div id="legend-bar"></div>
         <span id="legend-label">140 min</span>
       </div>
     </div>
     <div id="map"></div>
   </body>
-  <script src="./d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script type="module" src="app_copy.js"></script>
 </html>

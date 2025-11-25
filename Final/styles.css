@@ -1,0 +1,264 @@
+article {
+  flex: 0 0 25%; /* Set article to take up 20% of the screen width */
+  padding: 20px;
+  color: rgb(0, 0, 0); /* Ensure text is visible against the black background */
+  font-size: 16px;
+  line-height: 1.5;
+  /* Remove overflow-y: auto to allow natural page scrolling */
+  /* Remove height: 100vh to allow natural content height */
+}
+
+article .step {
+  height: 75vh; /* Each step takes up 75% of the vertical screen space */
+  width: 20vw; /* Set width to 20% of viewport height */
+  display: flex;
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  padding: 20px;
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+figure {
+  flex: 1; /* Allow figure to take up the remaining space */
+  position: -webkit-sticky;
+  position: sticky;
+  /* Remove height and top - these will be set by JavaScript */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+p1{
+    text-align: left;
+    font-size: 14px;
+    margin: 20px 20px 10px 40px;
+    color: #e50914;
+}
+
+.scatter_x-axis text, .scatter_y-axis text {
+    fill: white;
+    font-size: 12px;
+}
+.scatter_x-axis path, .scatter_x-axis line, .scatter_y-axis path, .scatter_y-axis line {
+    stroke: white;
+}
+
+.bar_x-axis text, .bar_y-axis text {
+    fill: white;
+    font-size: 12px;
+}
+.bar_x-axis path, .bar_x-axis line, .bar_y-axis path, .bar_y-axis line {
+    stroke: white;
+}
+
+.bar-label {
+    fill: white;
+    font-size: 15px;
+    font-weight: normal;
+    pointer-events: none;
+}
+
+
+body {
+    background-color: rgb(185, 83, 83);
+}
+
+.psuedo_footer {
+    margin: 10px;
+    font-size: 12px;
+    color: #e50914;
+    text-decoration: none;
+}
+
+body {
+    background-color: rgb(13, 13, 13);
+    /* I need to do this here my CSS file is not doing it */
+}
+h1 {
+    text-align: left;
+    font-size: 50px;
+    margin: 20px 20px 10px 40px;
+    color: #e50914;
+    fill: white;
+}
+
+#footer_link {
+    margin: 0;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    color: #e50914;
+    text-decoration: underline;
+}
+#footer_text {
+    margin: 0;
+    padding-left: 10px;
+    text-decoration: none;
+    color: #e50914;
+}
+#top10 {
+    height: 90vh;
+    width: auto;
+}
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: black;
+}
+
+h4 {
+    color: white;
+    margin-bottom: 8px;
+}
+
+/* footer {
+    bottom: 0;
+    z-index: 100;
+    background: black; 
+    width: 100%;
+    padding: 10px 0;
+} */
+#content {
+    position: relative;
+    background: transparent;
+    overflow-y: auto;
+    margin-bottom: 50px;
+    display: flex; /* Make content a flex container */
+    flex-direction: row; /* Horizontal layout: menu left, plots right */
+    align-items: flex-start;
+}
+
+/* Menu styling for vertical alignment */
+#menu {
+    min-width: 120px;
+    max-width: 140px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background: transparent;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+#plots {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1 0%;
+    height: 100%;
+    width: 100%;
+    overflow: visible;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.top-menu {
+  margin-bottom: 20px;
+  z-index: 10;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.filters {
+  flex-direction: column;
+  display: flex ;
+}
+
+.checkbox-genre {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-genre label {
+  color: white;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+/* Adjust layout for scrolly storytelling */
+.scrolly {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+/* Scrolly storytelling styles */
+#scrolly {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    background-color: #000000;
+    padding: 1rem;
+}
+
+#scrolly>* {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+#scrolly article {
+    position: relative;
+    padding: 0 1rem;
+    max-width: 20rem;
+}
+
+#scrolly figure {
+    position: -webkit-sticky;
+    position: sticky;
+    width: 75%;
+    margin: 0;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    background-color: #564d4d;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+#scrolly figure p {
+    text-align: center;
+    padding: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 8rem;
+    font-weight: 900;
+    color: #fff;
+}
+
+#scrolly .step {
+    margin: 0 auto 1rem auto;
+    background-color: #3b3b3b;
+    color: #fff;
+    height: 75vh;
+    border-radius: 10px;
+
+}
+
+#scrolly .step:last-child {
+    margin-bottom: 0;
+}
+
+#scrolly .step.is-active {
+    background-color: goldenrod;
+    color: #3b3b3b;
+}
+
+#scrolly .step p {
+    text-align: center;
+    padding: 1rem;
+    font-size: 1rem;
+}

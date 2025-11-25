@@ -20,6 +20,11 @@
 
 
 
+// THIS WILL BECOME A SCROLLYTELLING STORY????
+// one scatterplot which we follow
+    // each section will filter to a different genre as that genre's story is told
+    //https://russellsamora.github.io/scrollama/basic/
+
 
 
 
@@ -31,11 +36,8 @@
 
 
 
-let dimensions = [window.innerWidth/2.2, window.innerHeight*0.8] // dimensions shared for each plot
-let margins = {top: 20, right: 50, bottom: 30, left: 40};
-
-
-
+let dimensions = [window.innerWidth/2.8, window.innerHeight*0.5] // Make plots even smaller to fit properly
+let margins = {top: 10, right: 20, bottom: 30, left: 40}; // Reduce margins
 
 // Genres:
 let genres = ["Action", "Comedy", "Drama", "Romance", "Adventure", "Animation", "Documentary", "Horror"];
@@ -115,6 +117,14 @@ async function load_data(){
 
 
 function initializeLayout(){
+
+    // Set figure dimensions
+    var figureHeight = window.innerHeight / 2;
+    var figureMarginTop = (window.innerHeight - figureHeight) / 2;
+
+    const figure = d3.select("figure")
+        .style("height", figureHeight + "px")
+        .style("top", figureMarginTop + "px");
 
         //add top menu with checkboxes for genres
     const topmenu = d3.select("#menu").append("div").attr("class","top-menu");
@@ -275,17 +285,18 @@ function draw(){
     // EXIT old points
     points.exit()
         .transition()
-        .duration(400)
+        .duration(200)
         .attr("r", 0)
         .remove();
 
     // UPDATE existing points
     points
         .transition()
-        .duration(400)
+        .duration(200)
         .attr("cx", d => x_scale(d.fixed_minutes))
         .attr("cy", d => y_scale(d.Views))
-        .attr("fill", d => color_scale(getColorGenre(d)));
+        .attr("fill", d => color_scale(getColorGenre(d)))
+        .attr("r", 6); // Ensure radius is reset to 6
 
     // ENTER new points
     points.enter()
@@ -334,49 +345,8 @@ function draw(){
                 .attr("fill", "#e50914");
         })
         .transition()
-        .duration(500)
+        .duration(300)
         .attr("r", 6);
-
-    // Compute density contours for selected genres
-    const contourData = state.filters.checked.map(genre => {
-        const genreData = filteredData.filter(d => d.genres.includes(genre));
-        const density = d3.contourDensity()
-            .x(d => x_scale(d.fixed_minutes))
-            .y(d => y_scale(d.Views))
-            .size([dimensions[0], dimensions[1]])
-            .bandwidth(30) // Adjust bandwidth for smoother contours
-            (genreData);
-        return { genre, density };
-    });
-
-    // Select scatterplot SVG
-
-    // Bind contour data to paths
-    const contours = scatterplot_svg.selectAll(".contour")
-        .data(contourData.flatMap(d => d.density.map(c => ({ genre: d.genre, ...c }))), d => `${d.genre}-${d.value}`);
-
-    // EXIT old contours
-    contours.exit()
-        .transition()
-        .duration(400)
-        .style("opacity", 0)
-        .remove();
-
-    // UPDATE existing contours
-    contours
-        .transition()
-        .duration(400)
-        .attr("d", d3.geoPath())
-        .attr("fill", d => color_scale(d.genre))
-        .attr("opacity", 0.1);
-
-    // ENTER new contours
-    contours.enter()
-        .append("path")
-        .attr("class", "contour")
-        .attr("d", d3.geoPath())
-        .attr("fill", d => color_scale(d.genre))
-        .attr("opacity", 0.1);
 
     // update axes
     scatterplot_svg.select(".scatter_x-axis")
@@ -527,41 +497,65 @@ function draw(){
     // EXIT old labels
     labels.exit().remove();
 
-    // UPDATE existing labels
-    labels.transition()
-        .duration(400)
-        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10)
-        .attr("y", d => y_scale_bar(d.count) - 14)
-        .attr("transform", d => {
-            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10;
-            const y = y_scale_bar(d.count) - 14;
-            return `rotate(-45, ${x}, ${y})`;
-        })
-        .text(d => d.word);
-
     // ENTER new labels
-    labels.enter()
+    const labelsEnter = labels.enter()
         .append("text")
         .attr("class", "bar-label")
-        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10)
-        .attr("y", d => y_scale_bar(d.count) - 14)
         .attr("text-anchor", "middle")
         .attr("fill", "white")
+        .attr("font-size", "10px");
+
+    // MERGE enter and update selections
+    const labelsUpdate = labelsEnter.merge(labels);
+
+    // Apply attributes to both new and existing labels
+    labelsUpdate
+        .attr("x", d => x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2)
+        .attr("y", d => y_scale_bar(d.count) - 10)
         .attr("transform", d => {
-            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2 + 10;
-            const y = y_scale_bar(d.count) - 14;
+            const x = x_scale_bar(d.word) + x_scale_bar.bandwidth() / 2;
+            const y = y_scale_bar(d.count) - 10;
             return `rotate(-45, ${x}, ${y})`;
         })
         .text(d => d.word)
         .style("opacity", 0)
         .transition()
-        .duration(400)
+        .duration(600)
         .style("opacity", 1);
    
 }
 
+// Initialize Scrollama
+const scroller = scrollama();
 
+// Handle scroll events
+scroller
+  .setup({
+    step: ".step",
+    offset: 0.5,
+    debug: false,
+  })
+  .onStepEnter((response) => {
+    const stepIndex = response.index;
+    handleStepChange(stepIndex);
+  });
 
+function handleStepChange(stepIndex) {
+  if (stepIndex === 0) {
+    // Intro step: Show all data
+    state.filters.checked = genres;
+  } else if (stepIndex === 1) {
+    // Focus on Animation genre
+    state.filters.checked = ["Animation"];
+  } else if (stepIndex === 2) {
+    // Focus on Action genre
+    state.filters.checked = ["Action"];
+  }
 
+  // Redraw the visualization with the updated filters
+  draw();
+}
 
+// Ensure the layout updates on resize
+window.addEventListener("resize", scroller.resize);
 load_data();
