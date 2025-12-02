@@ -236,7 +236,7 @@ function initializeLayout(){
     
     //set up ranges for intro scatterplot scales
     intro_x_scale = d3.scaleLinear().range([intro_margins.left, svgWidth_top10 - intro_margins.right]);
-    intro_y_scale = d3.scaleLinear().range([svgHeight_top10 - intro_margins.bottom, intro_margins.top]);
+    intro_y_scale = d3.scaleLinear().range([svgHeight_top10 - intro_margins.bottom, intro_margins.top + 20]);
 
     //axes
     intro_scatterplot.append("g")
@@ -417,28 +417,6 @@ function draw(){
 
 
 
-        
-
-
-
-    // // Map to sum views for each word in titles
-    // const wordViewsMap = new Map();
-    // filteredData.forEach(d => {
-    //     // Remove colons before splitting
-    //     let title_words = d.primaryTitle.replace(/:/g, "").split(" ");
-    //     title_words.forEach(word => {
-    //         let w = word.toLowerCase();
-    //         if (!wordsNotIncluded.has(w)) {
-    //             wordViewsMap.set(w, (wordViewsMap.get(w) || 0) + d.Views);
-    //         }
-    //     });
-    // });
-    // // Example: convert to array and sort by total views
-    // const wordViewsArray = Array.from(wordViewsMap, ([word, totalViews]) => ({ word, totalViews }));
-    // wordViewsArray.sort((a, b) => d3.descending(a.totalViews, b.totalViews));
-    // console.log("Words sorted by total views:");
-    // console.log(wordViewsArray);
-
 
 
     const barData = Array.from(d3word_rollup, ([word, count]) => ({word, count}));
@@ -553,14 +531,14 @@ function draw(){
 }
 
 
-function draw_intro(){
+function draw_intro() {
     // get 10 movies with highest Views
     let top10 = Array.from(data);
-    top10.sort((a,b) => d3.descending(a.Views, b.Views));
-    top10 = top10.slice(0,10);
+    top10.sort((a, b) => d3.descending(a.Views, b.Views));
+    top10 = top10.slice(0, 10);
 
     // set domains for scales
-    top10_y_scale.domain(top10.map((d,i) => i+1)); // 1-10
+    top10_y_scale.domain(top10.map((d, i) => i + 1)); // 1-10
     top10_x_scale.domain([0, d3.max(top10, d => d.fixed_minutes)]).nice();
 
     // draw bars
@@ -571,17 +549,39 @@ function draw_intro(){
         .append("rect")
         .attr("class", "top10-bar")
         .attr("x", intro_margins.left)
-        .attr("y", (d,i) => top10_y_scale(i+1))
-        .attr("width", d => top10_x_scale(d.fixed_minutes) - margins.left)
+        .attr("y", (d, i) => top10_y_scale(i + 1))
+        .attr("width", d => top10_x_scale(d.fixed_minutes) - intro_margins.left)
         .attr("height", top10_y_scale.bandwidth())
-        .attr("fill", "#e50914");
+        .attr("fill", "#e50914")
+        .on("mouseover", function(event, d) {
+            // Highlight bar
+            d3.select(this).attr("fill", "#ff8000ff");
+
+            // Highlight corresponding point in scatterplot
+            d3.selectAll(".intro-point")
+                .filter(p => p.primaryTitle === d.primaryTitle)
+                .attr("stroke", "#ff8000ff")
+                .attr("stroke-width", 2)
+                .attr("r", 12); // Increase radius
+        })
+        .on("mouseleave", function(event, d) {
+            // Reset bar color
+            d3.select(this).attr("fill", "#e50914");
+
+            // Reset corresponding point in scatterplot
+            d3.selectAll(".intro-point")
+                .filter(p => p.primaryTitle === d.primaryTitle)
+                .attr("stroke", null)
+                .attr("stroke-width", null)
+                .attr("r", 10); // Reset radius
+        });
 
     // update axes
-    top_10_figure.select(".top10_x-axis")
-        .call(d3.axisBottom(top10_x_scale).ticks(6).tickFormat(d => d + " min"));
+    // top_10_figure.select(".top10_x-axis")
+    //     .call(d3.axisBottom(top10_x_scale).ticks(6).tickFormat(d => d + " min"))
 
-    top_10_figure.select(".top10_y-axis")
-        .call(d3.axisLeft(top10_y_scale).tickFormat((d,i) => `${d}. ${top10[i].primaryTitle}`));
+    // top_10_figure.select(".top10_y-axis")
+    //     .call(d3.axisLeft(top10_y_scale).tickFormat((d, i) => `${d}. ${top10[i].primaryTitle}`));
     
     //Text labels for left side of bars
     const labels = top_10_figure.selectAll(".top10-bar-label")
@@ -590,10 +590,10 @@ function draw_intro(){
     labels.enter()
         .append("text")
         .attr("class", "top10-bar-label")
-        .attr("text-anchor", "end")
+        .attr("text-anchor", "start")
         .attr("fill", "white")
         .attr("font-size", "12px")
-        .attr("x", intro_margins.left - 10)
+        .attr("x", intro_margins.left + 5)
         .attr("y", (d,i) => top10_y_scale(i+1) + top10_y_scale.bandwidth()/2 + 4)
         .text(d => d.primaryTitle);
 
@@ -604,11 +604,12 @@ function draw_intro(){
     runtimeLabels.enter()
         .append("text")
         .attr("class", "top10-bar-runtime-label")
-        .attr("text-anchor", "start")
+        .attr("text-anchor", "end") // Align text to the end
         .attr("fill", "white")
         .attr("font-size", "12px")
-        .attr("x", d => top10_x_scale(d.fixed_minutes)+150)
-        .attr("y", (d,i) => top10_y_scale(i+1) + top10_y_scale.bandwidth()/2 + 4)
+        .merge(runtimeLabels) // Merge enter and update selections
+        .attr("x", d => top10_x_scale(d.fixed_minutes) - 5) // Position inside the end of the bar
+        .attr("y", (d, i) => top10_y_scale(i + 1) + top10_y_scale.bandwidth() / 2 + 4) // Vertically center text
         .text(d => `${d.fixed_minutes} min`);
     
     //console.log combined viewcount
@@ -625,9 +626,16 @@ function draw_intro(){
         .attr("text-anchor", "start")
         .attr("fill", "black")
         .attr("font-size", "10px")
-        .attr("x", intro_margins.left + 5 )
+        .attr("x", intro_margins.left + 155 )
         .attr("y", (d,i) => top10_y_scale(i+1) + top10_y_scale.bandwidth()/2 + 4)
         .text(d => `${d3.format(",")(d.Views)} views`);
+
+
+
+
+
+
+
 
     // Intro scatterplot:
     // domains for intro scatterplot scales
@@ -645,12 +653,9 @@ function draw_intro(){
         .attr("class", "intro-point")
         .attr("cx", d => intro_x_scale(d.fixed_minutes))
         .attr("cy", d => intro_y_scale(d.Views))
-        .attr("r", 4)
-        .attr("fill", d => {
-            if (d.genres.includes("Animation")) return color_scale("Animation");
-            if (d.genres.includes("Romance")) return color_scale("Romance");
-            return color_scale(d.genres[0]);
-        }) // add tooltip
+        .attr("r", d => top10.includes(d) ? 10 : 6) // Larger radius for top-10 points
+        .attr("fill", d => top10.includes(d) ? "#e50914" : color_scale(d.genres[0])) // Top-10 points match bar color
+        .attr("opacity", d => top10.includes(d) ? 1 : 0.8) // Non-top-10 points have 80% opacity
         .on("mouseover", function(event, d) {
             const tooltip = d3.select("#tooltip");
             tooltip
@@ -662,9 +667,14 @@ function draw_intro(){
                     ${d3.format(",")(d.Views)} views`
                 );
             d3.select(this)
-                .attr("stroke", "#fff")
+                .attr("stroke", "#ff8000ff")
                 .attr("stroke-width", 2)
-                .attr("r", 6); // increase r to 6 on hover
+                .attr("r", d => top10.includes(d) ? 12 : 8); // Increase radius on hover
+
+            // Highlight corresponding bar in bar chart
+            d3.selectAll(".top10-bar")
+                .filter(barD => barD.primaryTitle === d.primaryTitle)
+                .attr("fill", "#ff8000ff");
         })
         .on("mousemove", function(event) {
             const tooltip = d3.select("#tooltip");
@@ -672,29 +682,19 @@ function draw_intro(){
                 .style("left", (event.pageX + 16) + "px")
                 .style("top", (event.pageY - 24) + "px");
         })
-        .on("mouseleave", function() {
+        .on("mouseleave", function(event, d) {
             const tooltip = d3.select("#tooltip");
             tooltip.style("display", "none");
             d3.select(this)
                 .attr("stroke", null)
                 .attr("stroke-width", null)
-                .attr("r", 4); // decrease r back to 4 on mouseleave
+                .attr("r", d => top10.includes(d) ? 10 : 6); // Reset radius on mouseleave
+
+            // Reset corresponding bar in bar chart
+            d3.selectAll(".top10-bar")
+                .filter(barD => barD.primaryTitle === d.primaryTitle)
+                .attr("fill", "#e50914");
         });
-    //highlight top 10 movies in intro scatterplot
-    intro_scatterplot_svg.selectAll(".intro-point")
-        .attr("stroke", d => top10.includes(d) ? "#ffb700ff" : null)
-        .attr("stroke-width", d => top10.includes(d) ? 2 : null)
-        .attr("r", d => top10.includes(d) ? 8 : 4)
-        //mouse leave should not remove highlight or radius for top10
-        .on("mouseleave", function(event, d) {
-            const tooltip = d3.select("#tooltip");
-            tooltip.style("display", "none");
-            d3.select(this)
-                .attr("stroke", d => top10.includes(d) ? "#ffb700ff" : null)
-                .attr("stroke-width", d => top10.includes(d) ? 2 : null)
-                .attr("r", d => top10.includes(d) ? 8 : 4); // keep radius for top10
-        });
-        
 
     // Update axes
     intro_scatterplot_svg.select(".intro_scatter_x-axis")
@@ -707,9 +707,26 @@ function draw_intro(){
         .selectAll("path, line") // Select axis lines and ticks
         .attr("stroke", "white"); // Set stroke to white
 
-    // Update axis text labels to white
-    intro_scatterplot_svg.selectAll(".intro_scatter_x-axis text, .intro_scatter_y-axis text")
-        .attr("fill", "white");
+    // add labels to intro scatterplot axes
+    // X-axis label
+    intro_scatterplot_svg.append("text")
+        .attr("class", "intro-scatter-x-label")
+        .attr("text-anchor", "end")
+        .attr("x", intro_dimensions[0] - intro_margins.right)
+        .attr("y", intro_dimensions[1] - 6)
+        .attr("fill", "#ff0000ff")
+        .text("Runtime (mins)");
+
+    // Y-axis label
+    intro_scatterplot_svg.append("text")
+        .attr("class", "intro-scatter-y-label")
+        .attr("text-anchor", "end")
+        //don't rotate, just position to left
+        .attr("x", intro_margins.left)
+        .attr("y", intro_margins.top +2 )
+        .attr("fill", "#ff0000ff")
+        .text("Views");
+
     
 }
 

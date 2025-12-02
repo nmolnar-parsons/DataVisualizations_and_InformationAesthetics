@@ -1,18 +1,27 @@
-body {
-    font-family: 'Courier New', Courier, monospace;
+/* color for labels and generally grey text */
+:root {
+    --label-color: #dadada;
 }
+
+body {
+    font-family: sans-serif;
+    background-color: #121212;
+}
+
 
 
 .intro-text {
     font-size: 16px;
-    margin: 20px 40px 20px 40px;
-    color: white;
+    margin: 20px auto; /* Center horizontally */
+    color: rgb(238, 238, 238);
+    width: 58%; /* Constrain to the middle 60% of the screen */
+    text-align: left; /* Center-align text */
 }   
 
 li {
     font-size: 14px;
     margin: 10px 0px 10px 40px;
-    color: white;
+    color: rgb(238, 238, 238);
 }
 
 article {
@@ -52,33 +61,52 @@ p1{
     color: #e50914;
 }
 
+#tick {
+    color : var(--label-color);
+}
+
+
 .scatter_x-axis text, .scatter_y-axis text {
-    fill: white;
+    fill: var(--label-color);
     font-size: 12px;
 }
 .scatter_x-axis path, .scatter_x-axis line, .scatter_y-axis path, .scatter_y-axis line {
-    stroke: white;
+    stroke: var(--label-color);
 }
 
 .bar_x-axis text, .bar_y-axis text {
-    fill: white;
+    fill: var(--label-color);
     font-size: 12px;
 }
 .bar_x-axis path, .bar_x-axis line, .bar_y-axis path, .bar_y-axis line {
-    stroke: white;
+    stroke: var(--label-color);
 }
 
+
+
+.top10_x-axis text, .top10_y-axis text,
+.intro_scatter_x-axis text, .intro_scatter_y-axis text {
+    fill: var(--label-color);
+    font-size: 12px;
+    
+}
+
+.top10_x-axis path, .top10_x-axis line,
+.top10_y-axis path, .top10_y-axis line,
+.intro_scatter_x-axis path, .intro_scatter_x-axis line,
+.intro_scatter_y-axis path, .intro_scatter_y-axis line {
+    stroke: var(--label-color);
+}
+
+
 .bar-label {
-    fill: white;
+    fill: var(--label-color);
     font-size: 15px;
     font-weight: normal;
     pointer-events: none;
 }
 
 
-body {
-    background-color: rgb(185, 83, 83);
-}
 
 .psuedo_footer {
     margin: 10px;
@@ -87,16 +115,11 @@ body {
     text-decoration: none;
 }
 
-body {
-    background-color: rgb(13, 13, 13);
-    /* I need to do this here my CSS file is not doing it */
-}
 h1 {
-    text-align: left;
-    font-size: 50px;
+    text-align: center;
+    font-size: 60px;
     margin: 20px 20px 10px 40px;
     color: #e50914;
-    fill: white;
 }
 
 #footer_link {
@@ -124,7 +147,7 @@ header {
 }
 
 h4 {
-    color: white;
+    color: rgb(238, 238, 238);
     margin-bottom: 8px;
 }
 
@@ -191,7 +214,7 @@ h4 {
 }
 
 .checkbox-genre label {
-  color: white;
+  color: rgb(238, 238, 238);
   white-space: nowrap;
   margin-left: 8px;
 }
@@ -209,7 +232,7 @@ h4 {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    background-color: #000000;
+    background-color: #121212;
     padding: 1rem;
 }
 
@@ -233,7 +256,7 @@ h4 {
     -webkit-transform: translate3d(0, 0, 0);
     -moz-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
-    background-color: #564d4d;
+    background-color: #2b2727;
     z-index: 0;
     display: flex;
     align-items: center;
@@ -258,7 +281,7 @@ h4 {
 
 #scrolly .step {
     margin: 0 auto 1rem auto;
-    background-color: #3b3b3b;
+    background-color: #2b2727;
     color: #fff;
     height: 75vh;
     border-radius: 10px;
@@ -281,5 +304,14 @@ h4 {
 }
 
 .tick {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: sans-serif;
+}
+
+#top-10-figure, #intro-scatterplot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* Center horizontally */
+    width: 100%; /* Ensure it spans the container */
+    margin-top: 100px;
 }
